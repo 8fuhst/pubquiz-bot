@@ -1,10 +1,10 @@
-FROM python:3.10-slim-bookworm as BASE
+FROM python:3.10-slim-bookworm AS BASE
 
 WORKDIR /app
 
 COPY requirements.txt .
 
-RUN pip install -y --no-install-recommends --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
