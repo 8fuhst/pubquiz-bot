@@ -79,8 +79,6 @@ def check_answers():
 def main() -> None:
     """Run the bot to send messages regularly."""
     logger.info("Starting bot...")
-    schedule.every(10).seconds.do(send_poll)
-    schedule.every(15).seconds.do(check_answers)
     schedule.every().monday.at("12:00").do(send_poll)
     schedule.every().monday.at("16:30").do(check_answers)
     while True:
