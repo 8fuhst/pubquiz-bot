@@ -23,11 +23,15 @@ formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(messag
 handler.setFormatter(formatter)
 logger.addHandler(handler)
 
+logger.info("Starting bot...")
+
 # Load config and set constants
 load_dotenv()
 CHAT_ID = os.getenv("CHAT_ID")
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 PUB_PHONE_NUMBER = os.getenv("PUB_PHONE_NUMBER")
+POLL_TIME = os.getenv("POLL_TIME")
+CHECK_TIME = os.getenv("CHECK_TIME")
 URL = f"https://api.telegram.org/bot{BOT_TOKEN}/"
 
 def send_poll():
@@ -53,23 +57,24 @@ def check_answers():
     
     # Check which users want to participate in the quiz
     appearing = []
-    print(resp.json())
+    count = 0
     for answer in resp.json().get("result"):
         if "poll_answer" in answer.keys():
             if answer["poll_answer"]["option_ids"] == [0]:
-                appearing.append(answer["poll_answer"]["user"]["username"])
-    if len(appearing) > 2:
+                count += 1
+                if "username" in answer["poll_answer"]["user"].keys():
+                    appearing.append(answer["poll_answer"]["user"]["username"])
+    if count > 2:
         resp = r.post(URL + "sendMessage", json={
             "chat_id": CHAT_ID,
             "text": "Cool! Scheint so als wenn ihr genug fürs Quiz seid. Viel Spaß!"
         }, headers={"Content-Type": "application/json"})
+    elif count > 0:
+        text = f"Hm, das sind wenige Meldungen für heute. Sagt bitte telefonisch ab wenn ihr nicht kommt! Die Telefonnummer ist {PUB_PHONE_NUMBER}."
+        for username in appearing:
+            text += (f" @{username}")
     else:
-        if len(appearing) > 0:
-            text = f"Hm, das sind wenige Meldungen für heute. Sagt bitte telefonisch ab wenn ihr nicht kommt! Die Telefonnummer ist {PUB_PHONE_NUMBER}."
-            for username in appearing:
-                text += (f" @{username}")
-        else:
-            text = f"Anscheinend hat sich für heute niemand gemeldet :( Denkt dran, dass wer anruft und absagt! Die Telefonnummer ist {PUB_PHONE_NUMBER}. Meldet euch bitte kurz wenn ihr das getan habt."
+        text = f"Anscheinend hat sich für heute niemand gemeldet :( Denkt dran, dass wer anruft und absagt! Die Telefonnummer ist {PUB_PHONE_NUMBER}. Meldet euch bitte kurz wenn ihr das getan habt."
         resp = r.post(URL + "sendMessage", json={
             "chat_id": CHAT_ID,
             "text": text
@@ -79,8 +84,8 @@ def check_answers():
 def main() -> None:
     """Run the bot to send messages regularly."""
     logger.info("Starting bot...")
-    schedule.every().monday.at("12:00").do(send_poll)
-    schedule.every().monday.at("16:30").do(check_answers)
+    schedule.every().monday.at(POLL_TIME).do(send_poll)
+    schedule.every().monday.at(CHECK_TIME).do(check_answers)
     while True:
         schedule.run_pending()
 
