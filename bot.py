@@ -75,10 +75,10 @@ def check_answers():
             text += (f" @{username}")
     else:
         text = f"Anscheinend hat sich für heute niemand gemeldet :( Denkt dran, dass wer anruft und absagt! Die Telefonnummer ist {PUB_PHONE_NUMBER}. Meldet euch bitte kurz wenn ihr das getan habt."
-        resp = r.post(URL + "sendMessage", json={
-            "chat_id": CHAT_ID,
-            "text": text
-        }, headers={"Content-Type": "application/json"})
+    resp = r.post(URL + "sendMessage", json={
+        "chat_id": CHAT_ID,
+        "text": text
+    }, headers={"Content-Type": "application/json"})
     logger.info("Parsed answers successfully")
 
 def main() -> None:
