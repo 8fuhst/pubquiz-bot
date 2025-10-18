@@ -65,10 +65,7 @@ def check_answers():
                 if "username" in answer["poll_answer"]["user"].keys():
                     appearing.append(answer["poll_answer"]["user"]["username"])
     if count > 2:
-        resp = r.post(URL + "sendMessage", json={
-            "chat_id": CHAT_ID,
-            "text": "Cool! Scheint so als wenn ihr genug fürs Quiz seid. Viel Spaß!"
-        }, headers={"Content-Type": "application/json"})
+        text = "Cool! Scheint so als wenn ihr genug fürs Quiz seid. Viel Spaß!"
     elif count > 0:
         text = f"Hm, das sind wenige Meldungen für heute. Sagt bitte telefonisch ab wenn ihr nicht kommt! Die Telefonnummer ist {PUB_PHONE_NUMBER}."
         for username in appearing:
