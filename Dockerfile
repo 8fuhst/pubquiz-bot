@@ -1,11 +1,12 @@
-FROM python:3.10-slim-bookworm AS BASE
+FROM python:3.14.6-slim-trixie AS BASE
 
 WORKDIR /app
 
-COPY requirements.txt .
+COPY pyproject.toml .
+COPY uv.lock .
 
-RUN pip install --no-cache-dir -r requirements.txt
+RUN uv sync
 
 COPY . .
 
-CMD ["python3", "bot.py"]
+CMD ["uv", "run", "--env-file", ".env", "bot.py"]
