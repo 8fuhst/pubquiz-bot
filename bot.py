@@ -42,7 +42,9 @@ def send_poll():
             "Ja",
             "Nein"
         ],
-        "is_anonymous": False
+        "is_anonymous": False,
+        "allow_adding_options": True,
+        "open_period": 12*60*60
     }, headers={"Content-Type": "application/json"})
     if resp.status_code != 200:
         logger.error(f"Failed to send poll: {resp.text}")
@@ -80,7 +82,6 @@ def check_answers():
 
 def main() -> None:
     """Run the bot to send messages regularly."""
-    logger.info("Starting bot...")
     schedule.every().monday.at(POLL_TIME, "Europe/Berlin").do(send_poll)
     schedule.every().monday.at(CHECK_TIME, "Europe/Berlin").do(check_answers)
     while True:
