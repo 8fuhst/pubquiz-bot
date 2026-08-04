@@ -1,11 +1,11 @@
-FROM python:3.14.6-slim-trixie AS BASE
+FROM ghcr.io/astral-sh/uv:python3.14-trixie-slim AS BASE
 
 WORKDIR /app
 
 COPY pyproject.toml .
 COPY uv.lock .
 
-RUN uv sync
+RUN uv sync --locked
 
 COPY . .
 
